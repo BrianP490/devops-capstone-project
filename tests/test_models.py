@@ -8,6 +8,7 @@ import os
 from service import app
 from service.models import Account, DataValidationError, db
 from tests.factories import AccountFactory
+from datetime import date
 
 DATABASE_URI = os.getenv(
     "DATABASE_URI", "postgresql://postgres:postgres@localhost:5432/postgres"
@@ -175,3 +176,19 @@ class TestAccount(unittest.TestCase):
         """It should not Deserialize an account with a TypeError"""
         account = Account()
         self.assertRaises(DataValidationError, account.deserialize, [])
+
+    def test_deserialize_with_no_date_joined(self):
+        """It should assign today's date as date joined if none detected"""
+        account = AccountFactory()
+
+        # Create Account data with missing date field
+        data = {
+            "name": "Test User",
+            "email": "test@example.com",
+            "address": "123 Main St",
+            "phone_number": "555-1234"
+            # "date_joined"  # Omit the date joined
+        }
+        serial_account = account.deserialize(data)
+
+        self.assertEqual(date.today(), serial_account.date_joined)
