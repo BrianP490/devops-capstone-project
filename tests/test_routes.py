@@ -177,3 +177,11 @@ class TestAccountService(TestCase):
         updated_account = resp.get_json()
         # Assert that the updated_account["name"] is whatever you changed it to
         self.assertEqual(updated_account["name"], new_name)
+
+    def test_update_account_not_found(self):
+        """It should not Update an Account that does not exist"""
+        response = self.client.put(
+            f"{BASE_URL}/0", content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

@@ -47,7 +47,7 @@ def create_accounts():
     app.logger.info("Request to create an Account")
     check_content_type("application/json")
     account = Account()
-    account.deserialize(request.get_json())
+    account.deserialize(request.get_json())  # "get_json()" Parses the data from the request body to a dictionary
     account.create()
     message = account.serialize()
     # Uncomment once get_accounts has been implemented
@@ -91,8 +91,25 @@ def get_account(id):
 # UPDATE AN EXISTING ACCOUNT
 ######################################################################
 
-# ... place you code here to UPDATE an account ...
+@app.route("/accounts/<int:id>", methods=["PUT"])
+def update_account(id):
+    """ Updates an Account
 
+    Args:
+        id (int): The id of the Account to update.
+    """
+    app.logger.info("Request to update an Account with id: %s", id)
+
+    target = Account.find(id)
+    if not target:
+        abort(
+            status.HTTP_404_NOT_FOUND,
+            f"Account with id [{id}] could not be found.",
+        )
+    target.deserialize(request.get_json())  # "get_json()" Parses the data from the request body to a dictionary
+    target.update()
+
+    return make_response(target.serialize(), status.HTTP_200_OK)
 
 ######################################################################
 # DELETE AN ACCOUNT
