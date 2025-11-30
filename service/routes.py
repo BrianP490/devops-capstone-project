@@ -75,7 +75,7 @@ def list_accounts():
     # Create a list of serialize() accounts
     accounts = [account.serialize() for account in accounts]
 
-    # Log the number of accounts being returned in the list 
+    # Log the number of accounts being returned in the list
     app.logger.info(f"Returning {len(accounts)} accounts")
 
     return make_response(jsonify(accounts), status.HTTP_200_OK)
@@ -87,7 +87,7 @@ def list_accounts():
 @app.route("/accounts/<int:id>", methods=["GET"])
 def get_account(id):
     """Reads an Account
-    
+
     Args:
         id (int): The id of the Account to get.
     """
@@ -132,7 +132,7 @@ def update_account(id):
 @app.route("/accounts/<int:account_id>", methods=["DELETE"])
 def delete_accounts(account_id):
     """Delete an Account
-    
+
     Args:
         account_id (int): The id of the Account to delete.
     """
@@ -144,7 +144,7 @@ def delete_accounts(account_id):
     # If found, call the delete() method on the account
     if target:
         target.delete()
-    
+
     return make_response("", status.HTTP_204_NO_CONTENT)
 
 
