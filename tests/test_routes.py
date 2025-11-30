@@ -129,8 +129,8 @@ class TestAccountService(TestCase):
         # Create an account with the helper function (calls the post method)
         account = self._create_accounts(1)[0]
         response = self.client.get(
-            f"{BASE_URL}/{account.id}", content_type="application/json",
-        )
+            f"{BASE_URL}/{account.id}",
+        ) 
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -140,9 +140,7 @@ class TestAccountService(TestCase):
     
     def test_account_not_found(self):
         """It should not Read an Account that does not exist"""
-        response = self.client.get(
-            f"{BASE_URL}/0", content_type="application/json",
-        )
+        response = self.client.get(f"{BASE_URL}/0")
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -155,7 +153,9 @@ class TestAccountService(TestCase):
         resp = self.client.post(
             BASE_URL,
             json=test_account.serialize(),
-        )
+            content_type="application/json",
+        )   # Use `content_type` argument to indicate what you are sending
+
         # Assert that the resp.status_code is status.HTTP_201_CREATED
         self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
 
@@ -169,7 +169,7 @@ class TestAccountService(TestCase):
         # Send a self.client.put() request to the BASE_URL with a json payload of new_account
         resp = self.client.put(
             f"{BASE_URL}/{new_account['id']}",
-            json=new_account
+            json=new_account,
         )
         # Assert that the resp.status_code is status.HTTP_200_OK
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
@@ -180,9 +180,20 @@ class TestAccountService(TestCase):
 
     def test_update_account_not_found(self):
         """It should not Update an Account that does not exist"""
+
+        dummy_data = {
+            "id": "999",
+            "name": "Non-existent",
+            "email": "missing@example.com",
+            "address": "Nowhere",
+            "date_joined": "today"
+        }
+
         response = self.client.put(
-            f"{BASE_URL}/0", content_type="application/json",
-        )
+            f"{BASE_URL}/0",
+            json=dummy_data,
+            content_type="application/json"
+        )  # Use `content_type` to indicate that the body is JSON
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -191,10 +202,7 @@ class TestAccountService(TestCase):
         self._create_accounts(5)
 
         # Send a self.client.get() request to the BASE_URL
-        resp = self.client.get(
-            BASE_URL,
-            content_type="application/json",
-        )
+        resp = self.client.get(BASE_URL)
 
         # Assert that the resp.status_code is status.HTTP_200_OK
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
@@ -204,3 +212,18 @@ class TestAccountService(TestCase):
 
         # Assert that the len() of the data is 5 (the # of accounts created)
         self.assertEqual(len(data), 5)
+
+    def test_delete_account(self):
+        """It should Delete an Account"""
+        account = self._create_accounts(1)[0]
+
+        # Send a self.client.delete() request to the BASE_URL with an id of an account
+        resp = self.client.delete(f"{BASE_URL}/{account.id}")
+
+        # Assert that the resp.status_code is status.HTTP_204_NO_CONTENT
+        self.assertEqual(resp.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_method_not_allowed(self):
+        """It should not allow an illegal method call"""
+        resp = self.client.delete(BASE_URL)
+        self.assertEqual(resp.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)

@@ -40,8 +40,8 @@ def index():
 ######################################################################
 @app.route("/accounts", methods=["POST"])
 def create_accounts():
-    """
-    Creates an Account
+    """Creates an Account
+
     This endpoint will create an Account based the data in the body that is posted
     """
     app.logger.info("Request to create an Account")
@@ -63,8 +63,8 @@ def create_accounts():
 ######################################################################
 @app.route("/accounts", methods=["GET"])
 def list_accounts():
-    """
-    List all Accounts
+    """List all Accounts
+
     This endpoint will list all Accounts
     """
     app.logger.info("Request to list Accounts")
@@ -86,8 +86,7 @@ def list_accounts():
 ######################################################################
 @app.route("/accounts/<int:id>", methods=["GET"])
 def get_account(id):
-    """
-    Reads an Account
+    """Reads an Account
     
     Args:
         id (int): The id of the Account to get.
@@ -130,8 +129,23 @@ def update_account(id):
 ######################################################################
 # DELETE AN ACCOUNT
 ######################################################################
+@app.route("/accounts/<int:account_id>", methods=["DELETE"])
+def delete_accounts(account_id):
+    """Delete an Account
+    
+    Args:
+        account_id (int): The id of the Account to delete.
+    """
+    app.logger.info("Request to delete an Account with id: %s", account_id)
 
-# ... place you code here to DELETE an account ...
+    # use the Account.find() method to retrieve the account by the account_id
+    target = Account.find(account_id)
+
+    # If found, call the delete() method on the account
+    if target:
+        target.delete()
+    
+    return make_response("", status.HTTP_204_NO_CONTENT)
 
 
 ######################################################################
