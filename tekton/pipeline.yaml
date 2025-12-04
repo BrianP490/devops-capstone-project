@@ -1,3 +1,4 @@
+# pipeline.yaml
 #
 # This pipeline needs the following tasks from Tekton Hub
 #   - git-clone
